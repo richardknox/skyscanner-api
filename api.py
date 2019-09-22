@@ -17,6 +17,14 @@ class Api:
         }
         self.base_url = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices"
 
+    def __fetch_base(self, mode, country, currency, locale, origin, destination, outbound_partial_date,
+                     inbound_partial_date=""):
+        url = f"/browse{mode}/v1.0/{country}/{currency}/{locale}/{origin}/{destination}/{outbound_partial_date}"
+        query = {"inboundpartialdate": inbound_partial_date}
+
+        response = requests.get(self.base_url + url, headers=self.headers, params=query)
+        return response.json()
+
     def fetch_quotes(self, country, currency, locale, origin, destination, outbound_partial_date,
                      inbound_partial_date=""):
         """
@@ -30,11 +38,41 @@ class Api:
         :param inbound_partial_date: return date, can be YYYY-MM-DD, YYYY-MM, or "anytime". defaults to empty string for one way
         :return: json object of the results
         """
-        url = f"/browsequotes/v1.0/{country}/{currency}/{locale}/{origin}/{destination}/{outbound_partial_date}"
-        query = {"inboundpartialdate": inbound_partial_date}
 
-        response = requests.get(self.base_url + url, headers=self.headers, params=query)
-        return response.json()
+        return self.__fetch_base("quotes", country, currency, locale, origin, destination, outbound_partial_date,
+                                 inbound_partial_date)
+
+    def fetch_routes(self, country, currency, locale, origin, destination, outbound_partial_date,
+                     inbound_partial_date=""):
+        """
+        Fetches cheapest cached routes for a given trip
+        :param country: market country the user is in
+        :param currency: currency for returned prices
+        :param locale: ISO locale for results
+        :param origin: origin place
+        :param destination: destination
+        :param outbound_partial_date: outbound date, can be YYYY-MM-DD, YYYY-MM, or "anytime"
+        :param inbound_partial_date: return date, can be YYYY-MM-DD, YYYY-MM, or "anytime". defaults to empty string for one way
+        :return: json object of the results
+        """
+        return self.__fetch_base("routes", country, currency, locale, origin, destination, outbound_partial_date,
+                                 inbound_partial_date)
+
+    def fetch_dates(self, country, currency, locale, origin, destination, outbound_partial_date,
+                    inbound_partial_date=""):
+        """
+        Fetches the cheapest dates for a given route from the cache
+        :param country: market country the user is in
+        :param currency: currency for returned prices
+        :param locale: ISO locale for results
+        :param origin: origin place
+        :param destination: destination
+        :param outbound_partial_date: outbound date, can be YYYY-MM-DD, YYYY-MM, or "anytime"
+        :param inbound_partial_date: return date, can be YYYY-MM-DD, YYYY-MM, or "anytime". defaults to empty string for one way
+        :return: json object of the results
+        """
+        return self.__fetch_base("dates", country, currency, locale, origin, destination, outbound_partial_date,
+                                 inbound_partial_date)
 
     def create_live_search_session(self, country, currency, locale, origin, destination, outbound_date, adults=1):
         """
