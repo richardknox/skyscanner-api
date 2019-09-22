@@ -15,7 +15,7 @@ class Api:
             'x-rapidapi-host': self.rapid_api_host,
             'x-rapidapi-key': self.api_key
         }
-        self.base_url = "https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices"
+        self.base_url = f"https://{self.rapid_api_host}/apiservices"
 
     def __fetch_base(self, mode, country, currency, locale, origin, destination, outbound_partial_date,
                      inbound_partial_date=""):
